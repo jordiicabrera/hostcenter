@@ -1,7 +1,7 @@
 <template>
     <v-data-table
           :headers="headers"
-          :items="bodegas"
+          :items="categorias"
           sort-by="descripcion"
           class="elevation-1"
         >
@@ -9,7 +9,7 @@
         <v-toolbar
           flat
         >
-        <v-toolbar-title>Listado de Bodegas</v-toolbar-title>
+        <v-toolbar-title>Listado de Categorias</v-toolbar-title>
         <v-divider
           class="mx-4"
           inset
@@ -27,7 +27,7 @@
               class="mb-2"
               v-bind="attrs"
               v-on="on"
-              to="/bodegas/crear"
+              to="/categorias/crear"
             >
               Nuevo
             </v-btn>
@@ -46,7 +46,7 @@
                     md="4"
                   >
                     <v-text-field
-                      v-model="editedBodega.bodega_id"
+                      v-model="editedCategoria.categoria_id"
                       label="ID"
                     ></v-text-field>
                   </v-col>
@@ -56,7 +56,7 @@
                     md="4"
                   >
                     <v-text-field
-                      v-model="editedBodega.codigo"
+                      v-model="editedCategoria.codigo"
                       label="Codigo"
                     ></v-text-field>
                   </v-col>
@@ -66,7 +66,7 @@
                     md="4"
                   >
                     <v-text-field
-                      v-model="editedBodega.descripcion"
+                      v-model="editedCategoria.descripcion"
                       label="Descripcion"
                     ></v-text-field>
                   </v-col>
@@ -99,7 +99,7 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="blue darken-1" text @click="closeDelete">Cancelar</v-btn>
-              <v-btn color="blue darken-1" text @click="deleteBodegaConfirm">OK</v-btn>
+              <v-btn color="blue darken-1" text @click="deleteCategoriaConfirm">OK</v-btn>
               <v-spacer></v-spacer>
             </v-card-actions>
           </v-card>
@@ -111,14 +111,14 @@
         small
         color="blue darken-1"
         class="mr-2"
-        @click="editBodega(item)"
+        @click="editCategoria(item)"
       >
         mdi-pencil
       </v-icon>
       <v-icon
         small
         color="blue darken-1"
-        @click="deleteBodega(item)"
+        @click="deleteCategoria(item)"
       >
         mdi-delete
       </v-icon>
@@ -135,7 +135,7 @@
 </template>
 
 <script>
-let url = 'http://localhost:3000/bodegas/'
+let url = 'http://localhost:3000/categorias/'
 //let articulos;
 import axios from 'axios';
   export default {
@@ -147,21 +147,21 @@ import axios from 'axios';
           text: 'ID',
           align: 'start',
           sortable: false,
-          value: 'bodega_id',
+          value: 'categoria_id',
         },
         { text: 'Codigo', value: 'codigo' },
         { text: 'Descripcion', value: 'descripcion' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
-      bodegas: [],
+      categorias: [],
       editedIndex: -1,
-      editedBodega: {
-        bodega_id:0,
+      editedCategoria: {
+        categoria_id:0,
         codigo: '',
         descripcion: ''
       },
-      defaultBodega: {
-        bodega_id:0,
+      defaultCategoria: {
+        categoria_id:0,
         codigo: '',
         descripcion: ''
       },
@@ -169,7 +169,7 @@ import axios from 'axios';
 
     computed: {
       formTitle () {
-        return this.editedIndex === -1 ? 'Nueva Bodega' : 'Editar Bodega'
+        return this.editedIndex === -1 ? 'Nueva Categoria' : 'Editar Categoria'
       },
     },
 
@@ -191,29 +191,29 @@ import axios from 'axios';
         axios
             .get(url)
             .then(response=>{
-              this.bodegas = response.data.bodega;
-              console.log(this.bodegas);
+              this.categorias = response.data.categoria;
+              console.log(this.categorias);
             }).catch((error)=>{
                 console.log(error);
             })
       },
 
-      editBodega (bodega) {
-        this.editedIndex = this.bodegas.indexOf(bodega)
-        this.editedBodega = Object.assign({}, bodega)
-        this.$router.push({name: 'EditarBodegas',params:{id:bodega.bodega_id}})
+      editCategoria (categoria) {
+        this.editedIndex = this.categorias.indexOf(categoria)
+        this.editedCategoria = Object.assign({}, categoria)
+        this.$router.push({name: 'EditarCategorias',params:{id:categoria.categoria_id}})
         //this.dialog = true
       },
 
-      deleteBodega (bodega) {
-        this.editedIndex = this.bodegas.indexOf(bodega)
-        this.editedBodega = Object.assign({}, bodega)
+      deleteCategoria (categoria) {
+        this.editedIndex = this.categorias.indexOf(categoria)
+        this.editedCategoria = Object.assign({}, categoria)
         this.dialogDelete = true
       },
 
-      deleteBodegaConfirm () {
-        let id = this.bodegas[this.editedIndex].bodega_id;
-        this.bodegas.splice(this.editedIndex, 1)
+      deleteCategoriaConfirm () {
+        let id = this.categorias[this.editedIndex].categoria_id;
+        this.categorias.splice(this.editedIndex, 1)
         axios.delete(url+id)
         .then(()=>{
           this.initialize()
@@ -224,7 +224,7 @@ import axios from 'axios';
       close () {
         this.dialog = false
         this.$nextTick(() => {
-          this.editedBodega = Object.assign({}, this.defaultBodega)
+          this.editedCategoria = Object.assign({}, this.defaultCategoria)
           this.editedIndex = -1
         })
       },
@@ -232,16 +232,16 @@ import axios from 'axios';
       closeDelete () {
         this.dialogDelete = false
         this.$nextTick(() => {
-          this.editedBodega = Object.assign({}, this.defaultBodega)
+          this.editedCategoria = Object.assign({}, this.defaultCategoria)
           this.editedIndex = -1
         })
       },
 
       save () {
         if (this.editedIndex > -1) {
-          Object.assign(this.bodegas[this.editedIndex], this.editedBodega)
+          Object.assign(this.categorias[this.editedIndex], this.editedCategoria)
         } else {
-          this.bodegas.push(this.editedBodega)
+          this.categorias.push(this.editedCategoria)
         }
         this.close()
       },

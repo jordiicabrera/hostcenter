@@ -1,15 +1,15 @@
 <template>
     <v-data-table
           :headers="headers"
-          :items="bodegas"
-          sort-by="descripcion"
+          :items="usuarios"
+          sort-by="nombres"
           class="elevation-1"
         >
         <template v-slot:top>
         <v-toolbar
           flat
         >
-        <v-toolbar-title>Listado de Bodegas</v-toolbar-title>
+        <v-toolbar-title>Listado de Usuarios</v-toolbar-title>
         <v-divider
           class="mx-4"
           inset
@@ -27,7 +27,7 @@
               class="mb-2"
               v-bind="attrs"
               v-on="on"
-              to="/bodegas/crear"
+              to="/usuarios/crear"
             >
               Nuevo
             </v-btn>
@@ -46,7 +46,7 @@
                     md="4"
                   >
                     <v-text-field
-                      v-model="editedBodega.bodega_id"
+                      v-model="editedUsuario.usuario_id"
                       label="ID"
                     ></v-text-field>
                   </v-col>
@@ -56,7 +56,17 @@
                     md="4"
                   >
                     <v-text-field
-                      v-model="editedBodega.codigo"
+                      v-model="editedUsuario.tipo_usuario"
+                      label="Tipo Usuario"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    sm="6"
+                    md="4"
+                  >
+                    <v-text-field
+                      v-model="editedUsuario.codigo"
                       label="Codigo"
                     ></v-text-field>
                   </v-col>
@@ -66,8 +76,18 @@
                     md="4"
                   >
                     <v-text-field
-                      v-model="editedBodega.descripcion"
-                      label="Descripcion"
+                      v-model="editedUsuario.usuario"
+                      label="Usuario"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    sm="6"
+                    md="4"
+                  >
+                    <v-text-field
+                      v-model="editedUsuario.nombres"
+                      label="Nombres"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -99,7 +119,7 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="blue darken-1" text @click="closeDelete">Cancelar</v-btn>
-              <v-btn color="blue darken-1" text @click="deleteBodegaConfirm">OK</v-btn>
+              <v-btn color="blue darken-1" text @click="deleteUsuarioConfirm">OK</v-btn>
               <v-spacer></v-spacer>
             </v-card-actions>
           </v-card>
@@ -111,14 +131,14 @@
         small
         color="blue darken-1"
         class="mr-2"
-        @click="editBodega(item)"
+        @click="editUsuario(item)"
       >
         mdi-pencil
       </v-icon>
       <v-icon
         small
         color="blue darken-1"
-        @click="deleteBodega(item)"
+        @click="deleteUsuario(item)"
       >
         mdi-delete
       </v-icon>
@@ -135,7 +155,7 @@
 </template>
 
 <script>
-let url = 'http://localhost:3000/bodegas/'
+let url = 'http://localhost:3000/user/'
 //let articulos;
 import axios from 'axios';
   export default {
@@ -147,29 +167,35 @@ import axios from 'axios';
           text: 'ID',
           align: 'start',
           sortable: false,
-          value: 'bodega_id',
+          value: 'usuario_id',
         },
+        { text: 'Tipo Usuario', value: 'tipo_usuario' },
         { text: 'Codigo', value: 'codigo' },
-        { text: 'Descripcion', value: 'descripcion' },
+        { text: 'Usuario', value: 'usuario' },
+        { text: 'Nombres', value: 'nombres' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
-      bodegas: [],
+      usuarios: [],
       editedIndex: -1,
-      editedBodega: {
-        bodega_id:0,
+      editedUsuario: {
+        usuario_id:0,
+        tipo_usuario:'',
         codigo: '',
-        descripcion: ''
+        usuario:'',
+        nombres: ''
       },
-      defaultBodega: {
-        bodega_id:0,
+      defaultUsuario: {
+        usuario_id:0,
+        tipo_usuario:'',
         codigo: '',
-        descripcion: ''
+        usuario:'',
+        nombres: ''
       },
     }),
 
     computed: {
       formTitle () {
-        return this.editedIndex === -1 ? 'Nueva Bodega' : 'Editar Bodega'
+        return this.editedIndex === -1 ? 'Nuevo Usuario' : 'Editar Usuario'
       },
     },
 
@@ -191,29 +217,29 @@ import axios from 'axios';
         axios
             .get(url)
             .then(response=>{
-              this.bodegas = response.data.bodega;
-              console.log(this.bodegas);
+              this.usuarios = response.data.usuario;
+              console.log(this.usuarios);
             }).catch((error)=>{
                 console.log(error);
             })
       },
 
-      editBodega (bodega) {
-        this.editedIndex = this.bodegas.indexOf(bodega)
-        this.editedBodega = Object.assign({}, bodega)
-        this.$router.push({name: 'EditarBodegas',params:{id:bodega.bodega_id}})
+      editUsuario (usuario) {
+        this.editedIndex = this.usuarios.indexOf(usuario)
+        this.editedUsuario = Object.assign({}, usuario)
+        this.$router.push({name: 'EditarUsuarios',params:{id:usuario.usuario_id}})
         //this.dialog = true
       },
 
-      deleteBodega (bodega) {
-        this.editedIndex = this.bodegas.indexOf(bodega)
-        this.editedBodega = Object.assign({}, bodega)
+      deleteUsuario (usuario) {
+        this.editedIndex = this.usuarios.indexOf(usuario)
+        this.editedUsuario = Object.assign({}, usuario)
         this.dialogDelete = true
       },
 
-      deleteBodegaConfirm () {
-        let id = this.bodegas[this.editedIndex].bodega_id;
-        this.bodegas.splice(this.editedIndex, 1)
+      deleteUsuarioConfirm () {
+        let id = this.usuarios[this.editedIndex].usuario_id;
+        this.usuarios.splice(this.editedIndex, 1)
         axios.delete(url+id)
         .then(()=>{
           this.initialize()
@@ -224,7 +250,7 @@ import axios from 'axios';
       close () {
         this.dialog = false
         this.$nextTick(() => {
-          this.editedBodega = Object.assign({}, this.defaultBodega)
+          this.editedUsuario = Object.assign({}, this.defaultUsuario)
           this.editedIndex = -1
         })
       },
@@ -232,16 +258,16 @@ import axios from 'axios';
       closeDelete () {
         this.dialogDelete = false
         this.$nextTick(() => {
-          this.editedBodega = Object.assign({}, this.defaultBodega)
+          this.editedUsuario = Object.assign({}, this.defaultUsuario)
           this.editedIndex = -1
         })
       },
 
       save () {
         if (this.editedIndex > -1) {
-          Object.assign(this.bodegas[this.editedIndex], this.editedBodega)
+          Object.assign(this.usuarios[this.editedIndex], this.editedUsuario)
         } else {
-          this.bodegas.push(this.editedBodega)
+          this.usuarios.push(this.editedUsuario)
         }
         this.close()
       },
