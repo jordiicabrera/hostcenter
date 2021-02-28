@@ -21,6 +21,10 @@ import ListarUsuarios from './views/usuarios/ListarUsuarios.vue'
 import EditarUsuarios from './views/usuarios/EditarUsuarios.vue'
 import CrearUsuarios from './views/usuarios/CrearUsuarios.vue'
 
+import ListarFacturas from './views/facturas/ListarFacturas.vue'
+
+import CrearFacturas from './views/facturas/CrearFacturas.vue'
+
 // import Login from './Login.vue'
 // import Home from './Home.vue'
 
@@ -111,6 +115,16 @@ const routes = [
     path: '/usuarios/crear/',
     name: 'CrearUsuarios',
     component: CrearUsuarios
+  },
+  {
+    path: '/facturas',
+    name: 'ListarFacturas',
+    component: ListarFacturas
+  },
+  {
+    path: '/facturas/crear/',
+    name: 'CrearFacturas',
+    component: CrearFacturas
   },
   // {
   //   path: '/about',

@@ -57,6 +57,7 @@ export default {
         }
     },
     methods:{
+        
         guardarCategoria(){
             let router = this.$router;
             let params = this.categoria;

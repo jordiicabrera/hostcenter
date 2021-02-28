@@ -15,8 +15,17 @@
                         required
                     >
                     </v-text-field>
+                    <v-select
+                        v-model="usuario.tipo_usuario_id"
+                        item-value="tipo_usuario_id"
+                        item-text="descripcion"
+                        :items = "tipousuario"
+                        label="Tipo Usuario"
+                        required
+                    >
+                    </v-select> 
                     <v-text-field 
-                        v-model="usuario.user"
+                        v-model="usuario.usuario"
                         label="Usuario"
                         outlined
                         required
@@ -24,7 +33,7 @@
                     </v-text-field>
                     <v-text-field 
                         v-model="usuario.nombres"
-                        label="Descripcion"
+                        label="Nombres"
                         outlined
                         required
                     >
@@ -52,9 +61,13 @@
 
 <script>
 let url = 'http://localhost:3000/user/'
+let urlTipoUsuario = 'http://localhost:3000/tipousuario/all/'
 import axios from 'axios';
 export default {
     name:'CrearUsuario',
+    created(){
+        this.obtenerTiposUsuarios();
+    },
     data(){
         return{
             show1: false,
@@ -65,16 +78,27 @@ export default {
             usuario:{
                 tipo_usuario_id:0,
                 codigo:'',
-                user:'',
+                usuario:'',
                 nombres:'',
                 clave: ''
-            }
+            },
+            tipousuario:[],
         }
     },
     methods:{
+         obtenerTiposUsuarios(){
+            axios.get(urlTipoUsuario)
+            .then(response=>{
+                this.tipousuario = response.data.data;
+                console.log(this.tipousuario);
+            }).catch((error)=>{
+                console.log(error);
+            })
+        },
         guardarUsuario(){
             let router=this.$router;
             let params = this.usuario;
+            console.log(params);
             axios.post(url,params)
             .then(()=>{
                 router.push('/usuarios');
