@@ -9,30 +9,95 @@
             <v-col>
                 <form>
                     <v-text-field 
-                        v-model="categoria.codigo"
-                        label="Codigo"
+                        v-model="factura.cliente"
+                        label="Cliente"
                         outlined
                         readonly
                     >
                     </v-text-field>
                     <v-text-field 
-                        v-model="categoria.descripcion"
-                        label="Descripcion"
+                        v-model="factura.vendedor"
+                        label="Vendedor"
                         outlined
-                        required
+                        readonly
                     >
                     </v-text-field>
-                    <v-card-actions>
-                        <v-btn to="/facturas" color="blue-grey" class="mr-4">Cancelar</v-btn>
-                        <!-- <v-btn type="submit" color="indigo" class="mr-4">Guardar</v-btn> -->
-                    </v-card-actions>
+                    <v-text-field 
+                        v-model="factura.fecha"
+                        label="Fecha"
+                        outlined
+                        readonly
+                    >
+                    </v-text-field>
                 </form>
             </v-col>
         </v-row>
+        <v-row>
+            <v-col class="mb-4">
+                <v-card>
+                <v-card-title>
+                <v-text-field
+                    v-model="search"
+                    append-icon="mdi-magnify"
+                    label="Search"
+                    single-line
+                    hide-details
+                ></v-text-field>
+                </v-card-title>
+                <v-data-table
+                    :headers="headers"
+                    :items="factura.detalle"
+                    :search="search"
+                ></v-data-table>
+            </v-card>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col class="mb-4">
+                <v-text-field 
+                        v-model="factura.cantidad_total"
+                        label="Cantidad"
+                        outlined
+                        readonly
+                >
+                </v-text-field>
+            </v-col>
+            <v-col class="mb-4">
+                <v-text-field 
+                        v-model="factura.valor_descuento"
+                        label="Descuento"
+                        outlined
+                        readonly
+                >
+                </v-text-field>
+            </v-col>
+            <v-col class="mb-4">
+                <v-text-field 
+                        v-model="factura.valor_iva"
+                        label="Iva"
+                        outlined
+                        readonly
+                >
+                </v-text-field>
+            </v-col>
+            <v-col class="mb-4">
+                <v-text-field 
+                        v-model="factura.valor_total"
+                        label="Total"
+                        outlined
+                        readonly
+                >
+                </v-text-field>
+            </v-col>
+        </v-row>
+        <v-card-actions>
+                        <v-btn to="/facturas" color="primary" class="mr-4">Cancelar</v-btn>
+                        <!-- <v-btn type="submit" color="indigo" class="mr-4">Guardar</v-btn> -->
+        </v-card-actions>
     </v-container>
 </template>
 <script>
-let url = 'http://localhost:3000/categorias/'
+let url = 'http://localhost:3000/facturas/'
 import axios from 'axios';
 export default {
     name:'VerFactura',
@@ -42,7 +107,8 @@ export default {
         //console.log(this.producto_id);
         axios.get(url+this.factura_id)
         .then(response=>{
-            this.factura=response.data.factura[0]
+            this.factura=response.data[0]
+            console.log(this.factura);
         }).catch((error)=>{
             console.log("El error de la peticion"+error);
         });
@@ -50,9 +116,19 @@ export default {
     data(){
         return{
             factura_id:null,
+            search:'',
+            headers: [
+            { text: 'Producto', value: 'descripcion' },
+            { text: 'Cantidad', value: 'cantidad' },
+            { text: 'Precio', value: 'precio_unitario' },
+            { text: 'Subtotal', value: 'subtotal' },
+            { text: 'Descuento', value: 'valor_descuento' },
+            { text: 'Iva', value: 'valor_iva' },
+            { text: 'Total', value: 'valor_total' },
+            ],
             factura:{
-                persona_id:'',
-                vendedor_id:'',
+                cliente:'',
+                vendedor:'',
                 fecha:new Date().toISOString().substr(0, 10),
                 cantidad_total:0,
                 total_iva:0,
@@ -60,8 +136,6 @@ export default {
                 valor_total:0,
                 detalle:[
                     {
-                        factura_id:null,
-                        producto_id:null,
                         descripcion:null,
                         cantidad:null,
                         precio_unitario:null,
@@ -72,6 +146,7 @@ export default {
                     }
                 ]
             },
+            
         }
     },
     methods:{

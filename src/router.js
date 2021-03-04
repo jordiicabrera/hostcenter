@@ -22,8 +22,12 @@ import EditarUsuarios from './views/usuarios/EditarUsuarios.vue'
 import CrearUsuarios from './views/usuarios/CrearUsuarios.vue'
 
 import ListarFacturas from './views/facturas/ListarFacturas.vue'
-
 import CrearFacturas from './views/facturas/CrearFacturas.vue'
+import VerFacturas from './views/facturas/VerFacturas.vue'
+
+import ListarInventarios from './views/inventarios/ListarInventarios.vue'
+import EditarInventarios from './views/inventarios/EditarInventarios.vue'
+import CrearInventarios from './views/inventarios/CrearInventarios.vue'
 
 // import Login from './Login.vue'
 // import Home from './Home.vue'
@@ -125,6 +129,26 @@ const routes = [
     path: '/facturas/crear/',
     name: 'CrearFacturas',
     component: CrearFacturas
+  },
+  {
+    path: '/facturas/ver/',
+    name: 'VerFacturas',
+    component: VerFacturas
+  },
+  {
+    path: '/inventarios',
+    name: 'ListarInventarios',
+    component: ListarInventarios
+  },
+  {
+    path: '/inventarios/crear/',
+    name: 'CrearInventarios',
+    component: CrearInventarios
+  },
+  {
+    path: '/inventarios/editar/',
+    name: 'EditarInventarios',
+    component: EditarInventarios
   },
   // {
   //   path: '/about',

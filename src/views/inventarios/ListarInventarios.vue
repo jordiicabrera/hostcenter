@@ -1,15 +1,15 @@
 <template>
     <v-data-table
           :headers="headers"
-          :items="facturas"
-          sort-by="nombres"
+          :items="inventarios"
+          sort-by="fecha"
           class="elevation-1"
         >
         <template v-slot:top>
         <v-toolbar
           flat
         >
-        <v-toolbar-title>Listado de Facturas</v-toolbar-title>
+        <v-toolbar-title>Listado de Movimientos de Inventario</v-toolbar-title>
         <v-divider
           class="mx-4"
           inset
@@ -27,7 +27,7 @@
               class="mb-2"
               v-bind="attrs"
               v-on="on"
-              to="/facturas/crear"
+              to="/inventarios/crear"
             >
               Nuevo
             </v-btn>
@@ -46,7 +46,7 @@
                     md="4"
                   >
                     <v-text-field
-                      v-model="editedFactura.factura_id"
+                      v-model="editedItem.movimiento_inventario_id"
                       label="ID"
                     ></v-text-field>
                   </v-col>
@@ -56,27 +56,7 @@
                     md="4"
                   >
                     <v-text-field
-                      v-model="editedFactura.cliente"
-                      label="Cliente"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col
-                    cols="12"
-                    sm="6"
-                    md="4"
-                  >
-                    <v-text-field
-                      v-model="editedFactura.vendedor"
-                      label="Vendedor"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col
-                    cols="12"
-                    sm="6"
-                    md="4"
-                  >
-                    <v-text-field
-                      v-model="editedFactura.fecha"
+                      v-model="editedItem.fecha"
                       label="Fecha"
                     ></v-text-field>
                   </v-col>
@@ -86,8 +66,8 @@
                     md="4"
                   >
                     <v-text-field
-                      v-model="editedFactura.cantidad_total"
-                      label="Cant. Total"
+                      v-model="editedItem.bodega"
+                      label="Bodega"
                     ></v-text-field>
                   </v-col>
                   <v-col
@@ -96,28 +76,8 @@
                     md="4"
                   >
                     <v-text-field
-                      v-model="editedFactura.total_iva"
-                      label="Tot. Iva"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col
-                    cols="12"
-                    sm="6"
-                    md="4"
-                  >
-                    <v-text-field
-                      v-model="editedFactura.total_descuento"
-                      label="Tot. Descuento"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col
-                    cols="12"
-                    sm="6"
-                    md="4"
-                  >
-                    <v-text-field
-                      v-model="editedFactura.valor_total"
-                      label="Total"
+                      v-model="editedItem.tipo"
+                      label="Tipo"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -148,8 +108,8 @@
             <v-card-title class="headline">Esta seguro de eliminar este registro?</v-card-title>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="closeDelete">Cancelar</v-btn>
-              <v-btn color="blue darken-1" text @click="deleteFacturaConfirm">OK</v-btn>
+              <v-btn color="blue darken-1" text @click="closeDelete">Regresar</v-btn>
+              <v-btn color="blue darken-1" text @click="deleteItemConfirm">OK</v-btn>
               <v-spacer></v-spacer>
             </v-card-actions>
           </v-card>
@@ -161,14 +121,14 @@
         small
         color="blue darken-1"
         class="mr-2"
-        @click="editFactura(item)"
+        @click="editItem(item)"
       >
         mdi-pencil
       </v-icon>
       <v-icon
         small
         color="blue darken-1"
-        @click="deleteFactura(item)"
+        @click="deleteItem(item)"
       >
         mdi-delete
       </v-icon>
@@ -185,7 +145,7 @@
 </template>
 
 <script>
-let url = 'http://localhost:3000/facturas/'
+let url = 'http://localhost:3000/inventarios/'
 //let articulos;
 import axios from 'axios';
   export default {
@@ -197,44 +157,32 @@ import axios from 'axios';
           text: 'ID',
           align: 'start',
           sortable: false,
-          value: 'factura_id',
+          value: 'movimiento_inventario_id',
         },
-        { text: 'Cliente', value: 'cliente' },
-        { text: 'Vendedor', value: 'vendedor' },
         { text: 'Fecha', value: 'fecha' },
-        { text: 'Cant. Total', value: 'cantidad_total' },
-        { text: 'Tot. Iva', value: 'total_iva' },
-        { text: 'Tot. Descuento', value: 'total_descuento' },
-        { text: 'Total', value: 'valor_total' },
+        { text: 'Bodega', value: 'bodega' },
+        { text: 'Tipo', value: 'tipo' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
-      facturas: [],
+      inventarios: [],
       editedIndex: -1,
-      editedFactura: {
-        factura_id:0,
-        cliente:'',
-        vendedor:'',
-        fecha:'',
-        cantidad_total:0,
-        total_iva:0,
-        total_descuento:0,
-        valor_total:0
+      editedItem: {
+        movimiento_inventario_id:0,
+        fecha: '',
+        bodega: '',
+        tipo: '',
       },
-      defaultFactura: {
-        factura_id:0,
-        cliente:'',
-        vendedor:'',
-        fecha:'',
-        cantidad_total:0,
-        total_iva:0,
-        total_descuento:0,
-        valor_total:0
+      defaultItem: {
+        movimiento_inventario_id:0,
+        fecha: '',
+        bodega: '',
+        tipo: '',
       },
     }),
 
     computed: {
       formTitle () {
-        return this.editedIndex === -1 ? 'Nueva Factura' : 'Editar Factura'
+        return this.editedIndex === -1 ? 'Nuevo Inventario' : 'Editar Inventario'
       },
     },
 
@@ -256,29 +204,29 @@ import axios from 'axios';
         axios
             .get(url)
             .then(response=>{
-              this.facturas = response.data.factura;
-              console.log(this.facturas);
+              this.inventarios = response.data.inventario;
+              console.log(this.inventarios);
             }).catch((error)=>{
                 console.log(error);
             })
       },
 
-      editFactura(factura) {
-        this.editedIndex = this.facturas.indexOf(factura)
-        this.editedFactura = Object.assign({}, factura)
-        this.$router.push({name: 'VerFacturas',params:{id:factura.factura_id}})
+      editItem (item) {
+        this.editedIndex = this.inventarios.indexOf(item)
+        this.editedItem = Object.assign({}, item)
+        this.$router.push({name: 'EditarInventarios',params:{id:item.movimiento_inventario_id}})
         //this.dialog = true
       },
 
-      deleteFactura (factura) {
-        this.editedIndex = this.facturas.indexOf(factura)
-        this.editedFactura = Object.assign({}, factura)
+      deleteItem (item) {
+        this.editedIndex = this.inventarios.indexOf(item)
+        this.editedItem = Object.assign({}, item)
         this.dialogDelete = true
       },
 
-      deleteFacturaConfirm () {
-        let id = this.facturas[this.editedIndex].factura_id;
-        this.facturas.splice(this.editedIndex, 1)
+      deleteItemConfirm () {
+        let id = this.inventarios[this.editedIndex].movimiento_inventario_id;
+        this.inventarios.splice(this.editedIndex, 1)
         axios.delete(url+id)
         .then(()=>{
           this.initialize()
@@ -289,7 +237,7 @@ import axios from 'axios';
       close () {
         this.dialog = false
         this.$nextTick(() => {
-          this.editedFactura = Object.assign({}, this.defaulFactura)
+          this.editedItem = Object.assign({}, this.defaultItem)
           this.editedIndex = -1
         })
       },
@@ -297,16 +245,16 @@ import axios from 'axios';
       closeDelete () {
         this.dialogDelete = false
         this.$nextTick(() => {
-          this.editedFactura = Object.assign({}, this.defaultFactura)
+          this.editedItem = Object.assign({}, this.defaultItem)
           this.editedIndex = -1
         })
       },
 
       save () {
         if (this.editedIndex > -1) {
-          Object.assign(this.facturas[this.editedIndex], this.editedFactura)
+          Object.assign(this.inventarios[this.editedIndex], this.editedItem)
         } else {
-          this.facturas.push(this.editedFactura)
+          this.inventarios.push(this.editedItem)
         }
         this.close()
       },

@@ -2,28 +2,25 @@
     <v-container>
         <v-row>
             <v-col class="mb-4">
-                <h1 class="display-2 font-weight-bold-mb-3">Ingreso de Facturas</h1>
+                <h1 class="display-2 font-weight-bold-mb-3">Ingreso de Movimientos de Inventarios</h1>
             </v-col>
         </v-row>
         <v-row>
             <v-col>
-                <form v-on:submit.prevent="guardarFactura()">
+                <form v-on:submit.prevent="guardarInventario()">
                     <v-select
-                        v-model="factura.persona_id"
-                        item-value="persona_id"
-                        item-text="nombres"
-                        :items = "persona"
-                        label="Cliente"
-                        required
-                        :rules="rules.select"
-                    >
-                    </v-select>
+                        v-model="inventario.tipo"
+                        :items="tipo"
+                        item-value="value"
+                        item-text="text"
+                        label="Tipo"
+                    ></v-select>
                     <v-select
-                        v-model="factura.vendedor_id"
-                        item-value="persona_id"
-                        item-text="nombres"
-                        :items = "vendedor"
-                        label="Vendedor"
+                        v-model="inventario.bodega_id"
+                        item-value="bodega_id"
+                        item-text="descripcion"
+                        :items = "bodega"
+                        label="Bodega"
                         required
                         :rules="rules.select"
                     >
@@ -32,15 +29,15 @@
                         ref="menu"
                         v-model="menu"
                         :close-on-content-click="false"
-                        :return-value.sync="factura.fecha"
+                        :return-value.sync="inventario.fecha"
                         transition="scale-transition"
                         offset-y
                         min-width="auto"
                     >
                         <template v-slot:activator="{ on, attrs }">
                         <v-text-field
-                            v-model="factura.fecha"
-                            label="Fecha Factura"
+                            v-model="inventario.fecha"
+                            label="Fecha"
                             append-icon="mdi-calendar"
                             readonly
                             v-bind="attrs"
@@ -48,7 +45,7 @@
                         ></v-text-field>
                         </template>
                         <v-date-picker
-                        v-model="factura.fecha"
+                        v-model="inventario.fecha"
                         no-title
                         scrollable
                         >
@@ -63,16 +60,16 @@
                         <v-btn
                             text
                             color="primary"
-                            @click="$refs.menu.save(factura.fecha)"
+                            @click="$refs.menu.save(inventario.fecha)"
                         >
                             OK
                         </v-btn>
                         </v-date-picker>
                     </v-menu>
-                    <!-- DETALLE DE LA FACTURA -->
+                    <!-- DETALLE DEL MOVIMIENTO -->
                     <v-data-table
                         :headers="headers"
-                        :items="factura.detalle"
+                        :items="inventario.detalle"
                         class="elevation-1"
                     >
                         <template v-slot:top>
@@ -127,18 +124,6 @@
                                         >
                                         </v-select>
                                     </v-col>
-                                    <!-- <v-col
-                                        cols="12"
-                                        sm="6"
-                                        md="4"
-                                    >
-                                        <v-text-field
-                                        v-model="editedItem.descripcion"
-                                        readonly
-                                        label="Producto"
-                            
-                                        ></v-text-field>
-                                    </v-col> -->
                                     <v-col
                                         cols="12"
                                         sm="6"
@@ -166,44 +151,10 @@
                                         md="4"
                                     >
                                         <v-text-field
-                                        v-model="editedItem.subtotal"
-                                        label="Subtotal"
+                                        v-model="editedItem.total"
+                                        label="Total"
                                         readonly
-                                        :value="subtotal"
-                                        ></v-text-field>
-                                    </v-col>
-                                    <v-col
-                                        cols="12"
-                                        sm="6"
-                                        md="4"
-                                    >
-                                        <v-text-field
-                                        v-model="editedItem.valor_descuento"
-                                        label="Descuento"
-                                        ></v-text-field>
-                                    </v-col>
-                                    <v-col
-                                        cols="12"
-                                        sm="6"
-                                        md="4"
-                                    >
-                                        <v-text-field
-                                        v-model="editedItem.valor_iva"
-                                        label="Iva"
-                                        readonly
-                                        :value="iva"
-                                        ></v-text-field>
-                                    </v-col>
-                                    <v-col
-                                        cols="12"
-                                        sm="6"
-                                        md="4"
-                                    >
-                                        <v-text-field
-                                        v-model="editedItem.valor_total"
-                                        label="Valor Total"
-                                        readonly
-                                        :value="val_total"
+                                        :value="total"
                                         ></v-text-field>
                                     </v-col>
                                     </v-row>
@@ -261,7 +212,7 @@
                         </template>
                     </v-data-table>
                     <v-card-actions>
-                        <v-btn to="/facturas" color="secondary" dark class="mr-4">Cancelar</v-btn>
+                        <v-btn to="/inventarios" color="secondary" dark class="mr-4">Cancelar</v-btn>
                         <v-btn type="submit" color="primary" dark class="mr-4">Guardar</v-btn>
                     </v-card-actions>
                 </form>
@@ -271,16 +222,13 @@
 </template>
 
 <script>
-let url = 'http://localhost:3000/facturas/'
-let urlPersona = 'http://localhost:3000/persona/all/'
-let urlVendedor = 'http://localhost:3000/vendedor/all/'
+let url = 'http://localhost:3000/inventarios/'
 import axios from 'axios';
 export default {
-    name:'CrearFactura',
+    name:'CrearInventario',
     created(){
-        this.obtenerPersonas();
-        this.obtenerVendedores();
         this.obtenerItems();
+        this.obtenerBodegas();
     },
     data(){
         return{
@@ -296,10 +244,7 @@ export default {
                 { text: 'Producto', value: 'descripcion' },
                 { text: 'Cantidad', value: 'cantidad' },
                 { text: 'Precio', value: 'precio_unitario' },
-                { text: 'Subtotal', value: 'subtotal' },
-                { text: 'Descuento', value: 'valor_descuento' },
-                { text: 'Iva', value: 'valor_iva' },
-                { text: 'Total', value: 'valor_total' },
+                { text: 'Total', value: 'total' },
                 { text: 'Actions', value: 'actions', sortable: false },
             ],
             //desserts: [],
@@ -309,48 +254,36 @@ export default {
                 descripcion: '',
                 cantidad: 0,
                 precio_unitario: 0.0,
-                subtotal: 0.0,
-                valor_descuento:0.0,
-                valor_iva: 0.0,
-                valor_total:0.0,
-                graba_iva:0
+                total: 0.0,
             },
             defaultItem: {
                 producto_id:0,
                 descripcion: '',
                 cantidad: 0,
                 precio_unitario: 0.0,
-                subtotal: 0.0,
-                valor_descuento:0.0,
-                valor_iva: 0.0,
-                valor_total:0.0,
-                graba_iva:0
+                total: 0.0,
             },
-            factura:{
-                persona_id:'',
-                vendedor_id:'',
+            inventario:{
+                tipo:'',
+                bodega_id:'',
                 fecha:new Date().toISOString().substr(0, 10),
-                cantidad_total:0,
-                total_iva:0,
-                total_descuento:0,
-                valor_total:0,
                 detalle:[
                     {
-                        factura_id:null,
+                        movimiento_inventario_id:null,
                         producto_id:null,
                         descripcion:null,
                         cantidad:null,
                         precio_unitario:null,
-                        subtotal:null,
-                        valor_descuento:null,
-                        valor_iva:null,
-                        valor_total:null
+                        total:null
                     }
                 ]
             },
-            persona: [],
-            vendedor:[],
+            tipo:[
+                {text:'Ingreso',value:'I'},
+                {text:'Egreso',value:'E'}
+            ],
             item:[],
+            bodega: [],
             rules: {
                 select: [(v) => !!v || "Item is required"],
                 select2: [(v) =>  v.length>0 || "Item is required in select 2"],
@@ -362,41 +295,14 @@ export default {
       formTitle () {
         return this.editedIndex === -1 ? 'Nuevo Articulo' : 'Editar Articulo'
       },
-      subtotal: function(){
-          let subtotal=0;
+      total: function(){
+          let total=0;
           if(this.editedItem.cantidad>0){
-            subtotal = this.editedItem.cantidad*this.editedItem.precio_unitario
+            total = this.editedItem.cantidad*this.editedItem.precio_unitario
             
           }
-          this.editedItem.subtotal = subtotal;
-          return subtotal;
-      },
-      iva:function(){
-          let iva=0;
-          console.log(this.editedItem.graba_iva);
-          if(this.editedItem.graba_iva==1){
-              let descuento = 0;
-              descuento =  this.editedItem.valor_descuento>0?this.editedItem.valor_descuento:0;
-              if(this.editedItem.cantidad>0){
-                  iva = ((this.editedItem.cantidad*this.editedItem.precio_unitario)-descuento)*0.12
-              }
-              
-          }
-          this.editedItem.valor_iva = iva;
-          return iva;
-      },
-      val_total:function(){
-          let val_total = 0;
-          if(this.editedItem.cantidad>0){
-              let subtotal = this.editedItem.cantidad*this.editedItem.precio_unitario
-              let descuento = this.editedItem.valor_descuento>0?this.editedItem.valor_descuento:0;
-              let iva = ((this.editedItem.cantidad*this.editedItem.precio_unitario)-descuento)*0.12;
-
-              val_total = (subtotal - descuento) + iva;
-              
-          }
-          this.editedItem.valor_total = val_total;
-          return val_total;
+          this.editedItem.total = total;
+          return total;
       },
     },
     watch: {
@@ -408,7 +314,7 @@ export default {
       },
     },
     mounted() {
-        this.factura.detalle.splice(this.factura.detalle.indexOf(0), 1)
+        this.inventario.detalle.splice(this.inventario.detalle.indexOf(0), 1)
     },
     methods:{
         obtenerPersonas(){
@@ -439,32 +345,42 @@ export default {
                 console.log(error);
             })
         },
-        guardarFactura(){
+        obtenerBodegas(){
+            axios.get('http://localhost:3000/bodega/all/')
+            .then(response=>{
+                console.log(this.bodega);
+                this.bodega = response.data.data;
+                console.log(this.bodega.descripcion);
+            }).catch((error)=>{
+                console.log(error);
+            })
+        },
+        guardarInventario(){
             let router=this.$router;
-            let params = this.factura;
-            console.log(this.factura);
+            let params = this.inventario;
+            console.log(this.inventario);
             axios.post(url,params)
             .then(()=>{
-                router.push('/facturas');
+                router.push('/inventarios');
             })
             .catch(error=>{
                 console.log(error.response.data);
             })
         },
         editItem (item) {
-            this.editedIndex = this.factura.detalle.indexOf(item)
+            this.editedIndex = this.inventario.detalle.indexOf(item)
             this.editedItem = Object.assign({}, item)
             this.dialog = true
         },
 
         deleteItem (item) {
-            this.editedIndex = this.factura.detalle.indexOf(item)
+            this.editedIndex = this.inventario.detalle.indexOf(item)
             this.editedItem = Object.assign({}, item)
             this.dialogDelete = true
         },
 
         deleteItemConfirm () {
-            this.factura.detalle.splice(this.editedIndex, 1)
+            this.inventario.detalle.splice(this.editedIndex, 1)
             this.closeDelete()
         },
 
@@ -489,9 +405,9 @@ export default {
         // },
         save () {
             if (this.editedIndex > -1) {
-            Object.assign(this.factura.detalle[this.editedIndex], this.editedItem)
+            Object.assign(this.inventario.detalle[this.editedIndex], this.editedItem)
             } else {
-            this.factura.detalle.push(this.editedItem)
+            this.inventario.detalle.push(this.editedItem)
             }
             //console.log(factura);
             this.close()
