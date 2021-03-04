@@ -123,7 +123,7 @@
         class="mr-2"
         @click="editItem(item)"
       >
-        mdi-pencil
+        mdi-eye
       </v-icon>
       <v-icon
         small
@@ -214,7 +214,7 @@ import axios from 'axios';
       editItem (item) {
         this.editedIndex = this.inventarios.indexOf(item)
         this.editedItem = Object.assign({}, item)
-        this.$router.push({name: 'EditarInventarios',params:{id:item.movimiento_inventario_id}})
+        this.$router.push({name: 'VerInventarios',params:{id:item.movimiento_inventario_id}})
         //this.dialog = true
       },
 

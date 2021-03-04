@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
+import Login from './Login.vue'
+
 import ListarProducto from './views/productos/ListarProductos.vue'
 import EditarProducto from './views/productos/EditarProductos.vue'
 import CrearProducto from './views/productos/CrearProductos.vue'
@@ -26,11 +28,11 @@ import CrearFacturas from './views/facturas/CrearFacturas.vue'
 import VerFacturas from './views/facturas/VerFacturas.vue'
 
 import ListarInventarios from './views/inventarios/ListarInventarios.vue'
-import EditarInventarios from './views/inventarios/EditarInventarios.vue'
+import VerInventarios from './views/inventarios/VerInventarios.vue'
 import CrearInventarios from './views/inventarios/CrearInventarios.vue'
 
 // import Login from './Login.vue'
-// import Home from './Home.vue'
+import Home from './Home.vue'
 
 Vue.use(VueRouter)
 
@@ -39,11 +41,6 @@ const routes = [
   //   path: '/',
   //   name: 'Login',
   //   component: Login
-  // },
-  // {
-  //   path: '/Home',
-  //   name: 'Home',
-  //   component: Home
   // },
   {
     path: '/productos',
@@ -146,18 +143,10 @@ const routes = [
     component: CrearInventarios
   },
   {
-    path: '/inventarios/editar/',
-    name: 'EditarInventarios',
-    component: EditarInventarios
+    path: '/inventarios/ver/',
+    name: 'VerInventarios',
+    component: VerInventarios
   },
-  // {
-  //   path: '/about',
-  //   name: 'About',
-  //   // route level code-splitting
-  //   // this generates a separate chunk (about.[hash].js) for this route
-  //   // which is lazy-loaded when the route is visited.
-  //   component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
-  // }
 ]
 
 const router = new VueRouter({

@@ -163,7 +163,7 @@
         class="mr-2"
         @click="editFactura(item)"
       >
-        mdi-pencil
+        mdi-eye
       </v-icon>
       <v-icon
         small
