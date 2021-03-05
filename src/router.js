@@ -31,6 +31,7 @@ import ListarInventarios from './views/inventarios/ListarInventarios.vue'
 import VerInventarios from './views/inventarios/VerInventarios.vue'
 import CrearInventarios from './views/inventarios/CrearInventarios.vue'
 
+import ReporteVentas from './views/reportes/ReporteVentas.vue'
 // import Login from './Login.vue'
 import Home from './Home.vue'
 
@@ -146,6 +147,11 @@ const routes = [
     path: '/inventarios/ver/',
     name: 'VerInventarios',
     component: VerInventarios
+  },
+  {
+    path: '/reporte',
+    name: 'ReporteVentas',
+    component: ReporteVentas
   },
 ]
 

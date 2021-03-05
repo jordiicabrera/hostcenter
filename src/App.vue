@@ -114,7 +114,7 @@
               </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item :to="{name:''}">
+          <v-list-item :to="{name:'ReporteVentas'}">
             <v-list-item-action>
               <v-icon>mdi-chart-line</v-icon>
             </v-list-item-action>
