@@ -43,12 +43,6 @@ VueRouter.prototype.push = function push(location) {
 }
 
 const routes = [
-  // {
-  //   path: '/',
-  //   redirect: {
-  //     name: "login"
-  //   },
-  // },
   {
     path: '/',
     name: 'login',
